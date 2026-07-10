@@ -1,0 +1,8 @@
+"/home/dan/cloned/nu_plugin_typetree/src/lib.rs"
+"/home/dan/cloned/nu_plugin_typetree/src/main.rs"
+"/home/dan/cloned/nu_plugin_typetree/Cargo.toml"
+"/home/dan/cloned/nu_plugin_typetree/flake.nix"
+"/home/dan/.cache/helix/helix.log"
+"/home/dan/.local/share/yazelix/configs/helix/config.toml"
+"/home/dan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nu-protocol-0.114.0/src/value/mod.rs"
+"/home/dan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nu-protocol-0.114.0/src/value/record.rs"

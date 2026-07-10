@@ -13,7 +13,7 @@
     {
       packages.${system}.default = pkgs.rustPlatform.buildRustPackage {
         pname = "nu_plugin_typetree";
-        version = "0.1.0";
+        version = "0.113.1";
         src = ./.;
         cargoLock.lockFile = ./Cargo.lock;
         doCheck = false;
