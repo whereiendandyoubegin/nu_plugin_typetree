@@ -137,7 +137,13 @@ pub fn render_types(
                     .iter()
                     .enumerate()
                     .fold(String::new(), |mut acc, (i, (name, nutype))| {
-                        acc.push_str(&render_types(nutype, Some(name), prefix, child_prefix));
+                        let last = i == field.len() - 1;
+                        let (p, cp) = if last {
+                            (format!("{child_prefix}└─ "), format!("{child_prefix}   "))
+                        } else {
+                            (format!("{child_prefix}├─ "), format!("{child_prefix}│  "))
+                        };
+                        acc.push_str(&render_types(nutype, Some(name), &p, &cp));
                         acc
                     });
             head + &children_string
@@ -148,20 +154,24 @@ pub fn render_types(
                     .iter()
                     .enumerate()
                     .fold(String::new(), |mut acc, (i, (name, nutype))| {
-                        (&mut acc).push_str(&render_types(
-                            nutype,
-                            Some(name),
-                            prefix,
-                            child_prefix,
-                        ));
+                        let last = i == field.len() - 1;
+                        let (p, cp) = if last {
+                            (format!("{child_prefix}└─ "), format!("{child_prefix}   "))
+                        } else {
+                            (format!("{child_prefix}├─ "), format!("{child_prefix}│  "))
+                        };
+                        acc.push_str(&render_types(nutype, Some(name), &p, &cp));
                         acc
                     });
             head + &children_string
         }
-        NuType::List(inner) => head + &render_types(inner.as_ref(), None, prefix, child_prefix),
+        NuType::List(inner) => {
+            let p = format!("{child_prefix}└─ ");
+            let cp = format!("{child_prefix}   ");
+            head + &render_types(inner.as_ref(), None, &p, &cp)
+        }
         _ => head,
-    };
-    String::new()
+    }
 }
 
 #[test]
@@ -180,4 +190,23 @@ fn test_describe_shape() {
     };
 
     println!("{result:#?}");
+}
+
+#[test]
+fn test_render_types() {
+    let output = std::process::Command::new("nu")
+        .args(["-c", "http get https://jsonplaceholder.typicode.com/users | first | describe --detailed | to nuon"])
+        .output()
+        .expect("failed to run nu");
+
+    let nuon_str = String::from_utf8_lossy(&output.stdout);
+    let value = nuon::from_nuon(nuon_str.trim(), None).expect("failed to parse nuon");
+
+    let nu_type = match &value {
+        Value::Record { val, .. } => parse_describe(val).expect("failed to parse describe"),
+        _ => panic!("expected record"),
+    };
+
+    let rendered = render_types(&nu_type, None, "", "");
+    println!("{rendered}");
 }
