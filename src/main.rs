@@ -1,7 +1,7 @@
+use nu_plugin::{MsgPackSerializer, serve_plugin};
+
 mod lib;
 
-use nu_plugin::{serve_plugin, MsgPackSerializer};
-
 fn main() {
-    println!("Hello, world!");
+    serve_plugin(&nu_plugin_typetree::TypeTreePlugin, MsgPackSerializer);
 }

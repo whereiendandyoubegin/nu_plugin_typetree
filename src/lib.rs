@@ -1,6 +1,55 @@
-use nu_plugin::Plugin;
-use nu_protocol::LabeledError;
-use nu_protocol::{CompareTypes, Value};
+use nu_plugin::{EngineInterface, EvaluatedCall, Plugin, PluginCommand, SimplePluginCommand};
+use nu_protocol::{LabeledError, Signature, Type, Value};
+
+pub struct TypeTreePlugin;
+pub struct TypeTree;
+
+impl Plugin for TypeTreePlugin {
+    fn version(&self) -> String {
+        env!("CARGO_PKG_VERSION").into()
+    }
+
+    fn commands(&self) -> Vec<Box<dyn PluginCommand<Plugin = Self>>> {
+        vec![Box::new(TypeTree)]
+    }
+}
+
+impl SimplePluginCommand for TypeTree {
+    type Plugin = TypeTreePlugin;
+
+    fn name(&self) -> &str {
+        "type-tree"
+    }
+
+    fn description(&self) -> &str {
+        "Pretty print describe --detailed output as a tree by piping to | typetree"
+    }
+
+    fn signature(&self) -> Signature {
+        Signature::build(PluginCommand::name(self)).input_output_type(Type::Any, Type::String)
+    }
+
+    fn run(
+        &self,
+        _plugin: &TypeTreePlugin,
+        _engine: &EngineInterface,
+        call: &EvaluatedCall,
+        input: &Value,
+    ) -> Result<Value, LabeledError> {
+        let record = match input {
+            Value::Record { val, .. } => val,
+            _ => {
+                return Err(LabeledError::new(
+                    "expected a record from describe --detailed",
+                ));
+            }
+        };
+
+        let nu_type = parse_describe(record)?;
+        let rendered = render_types(&nu_type, None, "", "");
+        Ok(Value::string(rendered, call.head))
+    }
+}
 
 #[derive(Debug)]
 pub enum NuType {
