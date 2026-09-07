@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-nu-plugin = "0.114.1"
-nu-protocol = "0.114.1"
+nu-plugin = "0.115.1"
+nu-protocol = "0.115.1"
 
 [dev-dependencies]
-nuon = "0.114.1"
+nuon = "0.115.1"
